@@ -203,4 +203,3 @@ Nos dará el error ↓
 > [name, value]=inspect.getmembers(game_actions, inspect.isfunction)
 > ValueError: not enough values to unpack (expected 2, got 1)
 > ```
-# 01-py-idle-game
