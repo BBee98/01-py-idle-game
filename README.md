@@ -144,9 +144,11 @@ print(f"event_type: {event_type}")
 
 ## inspect
 
-> 🔗 https://docs.python.org/3.9/library/inspect.html#inspect.getmembers
-
 Este módulo nos permite acceder a funciones útiles que nos dan información sobre variables, funciones, objetos...
+
+### getmemvers 
+
+> 🔗 https://docs.python.org/3/library/inspect.html#inspect.getmembers
 
 ### Caso de uso
 
@@ -203,3 +205,79 @@ Nos dará el error ↓
 > [name, value]=inspect.getmembers(game_actions, inspect.isfunction)
 > ValueError: not enough values to unpack (expected 2, got 1)
 > ```
+
+## functools
+
+Este módulo nos permite llamar o retornar otras funciones.
+
+### partial
+
+> 🔗https://docs.python.org/es/3/library/functools.html#functools.partial
+
+
+### Caso de uso
+
+Aunque las acciones generales del juego (como capturar el movimiento del personaje, mostrar textos, generar batallas, etc) se realizan **dentro** del loop del juego (es decir, una vez inicializado este), hay otras que
+necesitamos lanzar **antes** de iniciarlo. Una de ellas es, por ejemplo, **definir la pantalla de juego**.
+
+Tenemos dos ficheros para hacer este proceso: ``core.screen`` y ``core.pydle_system.prepare``.
+
+El fichero ``core.screen`` se encarga tanto de definir como de inicializar la pantalla donde se pintarán los elementos del juego.
+El fichero ``core.pydle_system.prepare``, de recibir los elementos que deben estar listos **antes** de inicializar el loop mediante la función
+``core.pydle_system.run``.
+
+Una de las cosas a definir es **el tamaño de la pantalla** (su ancho y su alto):
+
+````python
+# screen.py
+
+from pygame import display
+
+_screen = display
+
+def screen_size(width, height):
+    _screen.set_mode((width, height))
+````
+
+Para poder pasar los parámetros a la función, deberíamos hacerlo desde la función de ``prepare``:
+
+```python
+
+import core.screen as screen
+
+def prepare():
+    screen.screen_size(800, 600)
+```
+
+Pero **no queremos hacer esto**. Porque sino, por cada preparación que tuviéramos que hacer, tendríamos que añadirlo manualmente en esta función ``prepare``.
+Para eso tenemos ``functools.partial``:
+
+> 👉 _Retorna un nuevo partial object que cuando sea llamado se comportará como func llamado con los argumentos posicionales args y los argumentos de palabras clave keywords_
+
+> ✍🏻 Un ``partial`` en python es una función creada a partir de otra función existente, pero con uno o más argumentos prellenados o fijos.
+> Esos ``partial`` se crean a partir de la función que estamos estudiando (`functool.partial`).
+
+Así que para que la función ``pydle_system.prepare`` pueda lanzar la función `screen_width`:
+
+```python
+
+# start.py
+
+import functools
+import core.pydle_system as pydle_system
+
+from core.screen import screen_size
+
+pydle_system.prepare([functools.partial(screen_size, 800, 600)])
+```
+
+````python
+# pydle_system.py
+
+from inspect import isfunction
+
+def prepare(scripts):
+    for script in scripts:
+        if isfunction(script):
+            script()
+````

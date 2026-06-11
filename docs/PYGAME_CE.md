@@ -20,3 +20,10 @@ pygame.error: video system not initialized
 ☝️ Esto ocurre porque no hemos incluído la instrucción ``pygame.init()``.
 
 Es tan fácil como añadirlo al inicio de todo el script 👏🏼 
+
+
+## Eventos en PyGameCe
+
+| Nombre del evento | ID del evento |
+|-------------------|---------------|
+| pygame.QUIT       | 256           |

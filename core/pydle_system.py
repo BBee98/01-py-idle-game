@@ -1,7 +1,6 @@
-import pygame
+from inspect import isfunction
 
-def screen():
-    return pygame.display
+import pygame
 
 def clock():
     return pygame.time.Clock()
@@ -23,3 +22,9 @@ def run(game_scripts):
         _clock = clock()
         _clock.tick(60)
 pygame.quit()
+
+
+def prepare(scripts):
+    for script in scripts:
+        if isfunction(script):
+            script()
